@@ -1,5 +1,9 @@
-document.getElementById('download-form').addEventListener('submit', async function(e) {
+const formContainer = document.getElementById('download-form');
+const downloadButton = formContainer.querySelector('.download-btn');
+
+formContainer.addEventListener('submit', async function(e) {
     e.preventDefault();
+    downloadButton.innerText = 'Loading...';
     const url = document.getElementById('url').value;
     const response = await fetch('/download', {
         method: 'POST',
@@ -8,6 +12,7 @@ document.getElementById('download-form').addEventListener('submit', async functi
         },
         body: JSON.stringify({ url: url }),
     });
+    downloadButton.innerText = 'Download';
     const result = await response.json();
     const resultDiv = document.getElementById('result');
     if (result.success) {
