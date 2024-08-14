@@ -1,6 +1,9 @@
 from flask import Flask, request,render_template,jsonify
-from pytube import YouTube
+from pytubefix import YouTube
+from pytubefix.cli import on_progress
+
 app = Flask(__name__)
+
 @app.route('/')
 def index():
     return render_template('index.html') #this file will be render 
@@ -10,12 +13,16 @@ def download():
     data = request.get_json()
     video_url = data.get('url')
     #checks if url follow this format no then goto else statemnet
+
+
     if not video_url.startswith('https://www.youtube.com/shorts/'):
         return jsonify(success=False, message="Invalid URL")
     # if url is correct then this code will run
+
     try:
-        yt= YouTube(video_url)
+        yt= YouTube(video_url, on_progress_callback=on_progress)
         stream =yt.streams.filter(progressive=True, file_extension='mp4').first()
+
 
         if stream:
             download_url = stream.url
