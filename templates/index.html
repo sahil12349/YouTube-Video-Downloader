@@ -33,7 +33,7 @@
         }
         input[type="text"] {
             width: 100%;
-            margin-left:-10px ;
+            margin-left: -10px;
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ddd;
@@ -56,24 +56,24 @@
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #FF0000;
+            background-color: #cc0000;
         }
         #result {
             margin-top: 20px;
         }
-        #result p, #result img {
+        #result p {
             background: #56ab2f;
             color: #fff;
             padding: 10px;
             border-radius: 5px;
         }
-        a {
+        #result a {
             color: #fff;
             text-decoration: none;
         }
         .thumbnail {
             width: 100%;
-            max-width: 200px;
+            max-width: 300px;
             border-radius: 10px;
             margin-top: 10px;
         }
@@ -81,9 +81,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>YouTube Shorts Downloader</h1>
+        <h1>YouTube Downloader</h1>
         <form id="download-form">
-            <label for="url">Enter YouTube Shorts Video URL Only:</label>
+            <label for="url">Enter YouTube Video URL (Shorts, Regular, or Shortened):</label>
             <input type="text" id="url" name="url" required>
             <button type="submit">Download</button>
         </form>
@@ -93,24 +93,44 @@
     <script>
         document.getElementById('download-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const url = document.getElementById('url').value;
-            const response = await fetch('/download', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url: url }),
-            });
-            const result = await response.json();
-            const resultDiv = document.getElementById('result');
-            if (result.success) {
-                resultDiv.innerHTML = `
-                    <p>Title: ${result.title}</p>
-                    <img src="${result.thumbnail_url}" alt="Thumbnail" class="thumbnail">
-                    <p><a href="${result.download_url}" target="_blank">Download</a></p>
-                `;
-            } else {
-                resultDiv.innerHTML = `<p>${result.message}</p>`;
+            const url = document.getElementById('url').value.trim();
+            
+            // Updated URL pattern to handle YouTube Shorts, regular videos, and shortened URLs
+            const urlPattern = /^https:\/\/www\.youtube\.com\/(shorts\/.+|watch\?v=.+)$|^https:\/\/youtu\.be\/.+$/;
+            console.log('Entered URL:', url);
+            console.log('URL pattern match:', urlPattern.test(url));
+
+            if (!urlPattern.test(url)) {
+                document.getElementById('result').innerHTML = '<p>Invalid YouTube URL. Ensure it starts with "https://www.youtube.com/shorts/", "https://www.youtube.com/watch?v=", or "https://youtu.be/".</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('result');
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <p>Title: ${result.title}</p>
+                        <p><a href="${result.download_url}" target="_blank">Download MP3</a></p>
+                        <img src="${result.thumbnail}" alt="Thumbnail" class="thumbnail">
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<p>${result.message}</p>`;
+                }
+            } catch (error) {
+                document.getElementById('result').innerHTML = `<p>Error: ${error.message}</p>`;
             }
         });
     </script>
