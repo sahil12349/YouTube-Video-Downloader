@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,95 +8,161 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #56ab2f, #a8e063);
+            background: #f4f4f4;
+            margin: 0;
+            padding-top: 60px;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
         }
+
+        .navbar ul li {
+            margin: 0 15px;
+        }
+
+        .navbar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .navbar ul li a:hover {
+            color: #56ab2f;
+        }
+
         .container {
             background: #fff;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 90%;
             text-align: center;
+            margin: auto;
+            margin-top: 100px;
         }
+
         h1 {
             color: #333;
-        }
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555;
-        }
-        input[type="text"] {
-            width: 100%;
-            margin-left: -10px;
-            padding: 10px;
             margin-bottom: 20px;
-            border: 1px solid #ddd;
+            font-size: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 2px solid #56ab2f;
             border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .input-group input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
             font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        input[type="text"]:focus {
-            border-color: #56ab2f;
             outline: none;
+            border-right: 2px solid #56ab2f;
         }
-        button {
-            background-color: #FF0000;
+
+        .input-group button {
+            background-color: #56ab2f;
             color: #fff;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
         }
-        button:hover {
-            background-color: #cc0000;
+
+        .input-group button:hover {
+            background-color: #45a049;
         }
+
         #result {
             margin-top: 20px;
+            text-align: left;
+            font-size: 16px;
         }
+
         #result p {
-            background: #56ab2f;
-            color: #fff;
+            background: #f9f9f9;
+            color: #333;
             padding: 10px;
             border-radius: 5px;
         }
+
         #result a {
-            color: #fff;
+            color: #56ab2f;
             text-decoration: none;
+            font-weight: bold;
         }
+
+        #result a:hover {
+            text-decoration: underline;
+        }
+
         .thumbnail {
             width: 100%;
-            max-width: 300px;
+            max-width: 150px;
             border-radius: 10px;
             margin-top: 10px;
+            float: right;
         }
     </style>
 </head>
+
 <body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <ul>
+            <li><a href="#">YouTube</a></li>
+            <li><a href="#">Facebook</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">TikTok</a></li>
+            <li><a href="#">Install</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
     <div class="container">
-        <h1>YouTube Downloader</h1>
+        <h1>YouTube Video Downloader</h1>
         <form id="download-form">
-            <label for="url">Enter YouTube Video URL (Shorts, Regular, or Shortened):</label>
-            <input type="text" id="url" name="url" required>
-            <button type="submit">Download</button>
+            <div class="input-group">
+                <input type="text" id="url" name="url"
+                    placeholder="https://www.youtube.com/watch?v=example" required>
+                <button type="submit">Download</button>
+            </div>
         </form>
         <div id="result"></div>
     </div>
 
     <script>
-        document.getElementById('download-form').addEventListener('submit', async function(e) {
+        document.getElementById('download-form').addEventListener('submit', async function (e) {
             e.preventDefault();
             const url = document.getElementById('url').value.trim();
-            
-            // Updated URL pattern to handle YouTube Shorts, regular videos, and shortened URLs
+
             const urlPattern = /^https:\/\/www\.youtube\.com\/(shorts\/.+|watch\?v=.+)$|^https:\/\/youtu\.be\/.+$/;
             console.log('Entered URL:', url);
             console.log('URL pattern match:', urlPattern.test(url));
@@ -117,14 +184,14 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok.');
                 }
-
                 const result = await response.json();
                 const resultDiv = document.getElementById('result');
                 if (result.success) {
                     resultDiv.innerHTML = `
                         <p>Title: ${result.title}</p>
-                        <p><a href="${result.download_url}" target="_blank">Download MP3</a></p>
-                        <img src="${result.thumbnail}" alt="Thumbnail" class="thumbnail">
+                        <img src="${result.thumbnail}" alt="Thumbnail" class="thumbnail"></p>
+                        <p><a href="${result.download_url}" target="_blank">Download MP3</a>
+                            
                     `;
                 } else {
                     resultDiv.innerHTML = `<p>${result.message}</p>`;
@@ -135,4 +202,5 @@
         });
     </script>
 </body>
+
 </html>
